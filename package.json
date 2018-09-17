@@ -8,6 +8,7 @@
     "start": "nodemon index --exec babel-node"
   },
   "dependencies": {
+    "async": "^2.6.1",
     "dotenv": "^6.0.0",
     "got": "^9.2.1",
     "hapi": "^17.5.4"

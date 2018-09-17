@@ -3830,3 +3830,5 @@ export const wards = [
   'G35KWVuF0yI',
   'zKBVWTKoPUS'
 ];
+
+export const testWards = ['EM37NTHYk6i'];

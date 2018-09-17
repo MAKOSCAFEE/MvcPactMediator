@@ -24,7 +24,15 @@ const init = async () => {
   const caregiver_program_indicators = metadata.filter(({ programId }) => programId === CAREGIVER_PROGRAM_ID);
   const ovc_program_indicators = metadata.filter(({ programId }) => programId === OVC_PROGRAM_ID);
   console.log(`Server running at: ${server.info.uri}`);
-  await getAndSendData(ovc_program_indicators, PACT_BASE_URL, PACT_USER_NAME, PACT_PASSWORD);
+  await getAndSendData(
+    ovc_program_indicators,
+    PACT_BASE_URL,
+    PACT_USER_NAME,
+    PACT_PASSWORD,
+    MVC_BASE_URL,
+    MVC_USER_NAME,
+    MVC_PASSWORD
+  );
 };
 
 process.on('unhandledRejection', err => {
