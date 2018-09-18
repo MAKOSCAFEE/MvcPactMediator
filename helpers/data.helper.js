@@ -1,4 +1,5 @@
 import { wards, testWards } from '../metadata/wards';
+import { ouMapper, dataElementMapper } from '../metadata/mvc_pact_mapper';
 import { parallelLimit } from 'async';
 import got from 'got';
 
@@ -19,11 +20,21 @@ export const getAndSendData = async (
       return getData(source_base_url, wardId, indicatorIds, source_username, source_password, callBackFn);
     }),
     10,
-    (error, results) => {
+    async (error, results) => {
       const resultsWithData = results.filter(({ rows }) => rows.length);
-      const formatedData = resultsWithData.map(analytics => formatDataReceived(analytics));
-      const dataValues = [].concat.apply([], formatedData);
-      // await sendDestinationData(destination_base_url,dataValues,destination_username,destination_password);
+      if (resultsWithData.length) {
+        const formatedData = resultsWithData.map(analytics => formatDataReceived(analytics));
+        const dataValues = [].concat.apply([], formatedData);
+        const retunedData = await sendDestinationData(
+          destination_base_url,
+          dataValues,
+          destination_username,
+          destination_password
+        );
+        console.log(retunedData);
+      } else {
+        process.end(1);
+      }
     }
   );
 };
@@ -34,13 +45,16 @@ const formatDataReceived = data => {
   const peIndex = headers.findIndex(({ name }) => name === 'pe');
   const ouIndex = headers.findIndex(({ name }) => name === 'ou');
   const valueIndex = headers.findIndex(({ name }) => name === 'value');
-  const formatedRows = rows.map(row => ({
-    dataElement: row[dxIndex],
-    categoryOptionCombo: 'cocID',
-    period: row[peIndex],
-    orgUnit: row[ouIndex],
-    value: row[valueIndex]
-  }));
+  const formatedRows = rows.map(row => {
+    const [dataElement, categoryOptionCombo] = dataElementMapper[row[dxIndex]].split('.');
+    return {
+      dataElement,
+      categoryOptionCombo,
+      period: row[peIndex],
+      orgUnit: ouMapper[row[ouIndex]] || row[ouIndex],
+      value: row[valueIndex]
+    };
+  });
   return formatedRows;
 };
 
@@ -59,14 +73,15 @@ const getPactData = async (baseUrl, wardId, indicatorIds, username, password) =>
       Authorization
     }
   });
-  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:THIS_YEAR&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
+  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:201805&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
   return client.get(PACT_ANALYTICS_URL, { json: true });
 };
 
 const sendDestinationData = async (baseUrl, dataValues, username, password) => {
   const authString = new Buffer(`${username}:${password}`).toString('base64');
   const Authorization = `Basic ${authString}`;
-  const DESTINATION_DATASET_URL = `api/dataValueSets`;
+  console.log(JSON.stringify({ dataValues }));
+  const DESTINATION_DATASET_URL = `api/dataValueSets.json`;
   const client = got.extend({
     baseUrl,
     headers: {
