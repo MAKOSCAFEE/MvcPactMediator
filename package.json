@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "babel-node": "babel-node --presets=latest",
-    "start": "nodemon index --exec babel-node"
+    "devStart": "nodemon index --exec babel-node",
+    "start": "node index"
   },
   "dependencies": {
     "async": "^2.6.1",

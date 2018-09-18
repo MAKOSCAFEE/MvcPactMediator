@@ -1,4 +1,4 @@
-import { wards, testWards } from '../metadata/wards';
+import { wards } from '../metadata/wards';
 import { ouMapper, dataElementMapper } from '../metadata/mvc_pact_mapper';
 import { parallelLimit } from 'async';
 import got from 'got';
@@ -15,12 +15,15 @@ export const getAndSendData = async (
   const indicatorIds = indicators.map(({ id }) => id).join(';');
 
   parallelLimit(
-    testWards.map(wardId => async callBackFn => {
+    wards.map(wardId => async callBackFn => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       return getData(source_base_url, wardId, indicatorIds, source_username, source_password, callBackFn);
     }),
     10,
     async (error, results) => {
+      if (error) {
+        process.end(1);
+      }
       const resultsWithData = results.filter(({ rows }) => rows.length);
       if (resultsWithData.length) {
         const formatedData = resultsWithData.map(analytics => formatDataReceived(analytics));
@@ -31,7 +34,7 @@ export const getAndSendData = async (
           destination_username,
           destination_password
         );
-        console.log(retunedData);
+        process.end(1);
       } else {
         process.end(1);
       }
@@ -59,9 +62,18 @@ const formatDataReceived = data => {
 };
 
 const getData = async (source_base_url, wardid, indicatorIds, source_username, source_password, callBackFn) => {
-  const { body: wardData } = await getPactData(source_base_url, wardid, indicatorIds, source_username, source_password);
-
-  callBackFn(null, wardData);
+  try {
+    const { body: wardData } = await getPactData(
+      source_base_url,
+      wardid,
+      indicatorIds,
+      source_username,
+      source_password
+    );
+    callBackFn(null, wardData);
+  } catch (error) {
+    callBackFn(error, null);
+  }
 };
 
 const getPactData = async (baseUrl, wardId, indicatorIds, username, password) => {
@@ -73,7 +85,7 @@ const getPactData = async (baseUrl, wardId, indicatorIds, username, password) =>
       Authorization
     }
   });
-  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:201805&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
+  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:THIS_MONTH&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
   return client.get(PACT_ANALYTICS_URL, { json: true });
 };
 
