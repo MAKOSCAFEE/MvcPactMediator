@@ -22,21 +22,21 @@ export const getAndSendData = async (
     10,
     async (error, results) => {
       if (error) {
-        process.end(1);
+        console.log(error);
       }
       const resultsWithData = results.filter(({ rows }) => rows.length);
       if (resultsWithData.length) {
         const formatedData = resultsWithData.map(analytics => formatDataReceived(analytics));
         const dataValues = [].concat.apply([], formatedData);
-        const retunedData = await sendDestinationData(
+        const response = await sendDestinationData(
           destination_base_url,
           dataValues,
           destination_username,
           destination_password
         );
-        process.end(1);
+        console.log(JSON.stringify((response.body && response.body.importCount) || {}));
       } else {
-        process.end(1);
+        console.log('no data');
       }
     }
   );
@@ -85,14 +85,13 @@ const getPactData = async (baseUrl, wardId, indicatorIds, username, password) =>
       Authorization
     }
   });
-  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:THIS_MONTH&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
+  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:201805&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
   return client.get(PACT_ANALYTICS_URL, { json: true });
 };
 
 const sendDestinationData = async (baseUrl, dataValues, username, password) => {
   const authString = new Buffer(`${username}:${password}`).toString('base64');
   const Authorization = `Basic ${authString}`;
-  console.log(JSON.stringify({ dataValues }));
   const DESTINATION_DATASET_URL = `api/dataValueSets.json`;
   const client = got.extend({
     baseUrl,
