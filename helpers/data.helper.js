@@ -1,8 +1,8 @@
-import { wards } from '../metadata/wards';
+import { chunkedWards } from '../metadata/wards';
 import { ouMapper, dataElementMapper } from '../metadata/mvc_pact_mapper';
-import { parallelLimit } from 'async';
 import got from 'got';
 
+let NUMBER = 0;
 export const getAndSendData = async (
   indicators,
   source_base_url,
@@ -14,32 +14,51 @@ export const getAndSendData = async (
 ) => {
   const indicatorIds = indicators.map(({ id }) => id).join(';');
 
-  parallelLimit(
-    wards.map(wardId => async callBackFn => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return getData(source_base_url, wardId, indicatorIds, source_username, source_password, callBackFn);
-    }),
-    10,
-    async (error, results) => {
-      if (error) {
-        console.log(error);
-      }
-      const resultsWithData = results.filter(({ rows }) => rows.length);
-      if (resultsWithData.length) {
-        const formatedData = resultsWithData.map(analytics => formatDataReceived(analytics));
-        const dataValues = [].concat.apply([], formatedData);
-        const response = await sendDestinationData(
-          destination_base_url,
-          dataValues,
-          destination_username,
-          destination_password
-        );
-        console.log(JSON.stringify((response.body && response.body.importCount) || {}));
-      } else {
-        console.log('no data');
-      }
+  const wardsData = [];
+  for (const chunkWards of chunkedWards) {
+    const responsePromises = chunkWards.map(wardid =>
+      getPactData(source_base_url, wardid, indicatorIds, source_username, source_password)
+    );
+    const response = await Promise.all(responsePromises);
+    const rows = response.map(({ body }) => body.rows).filter(rows => rows.length);
+    if (rows.length) {
+      wardsData.push(rows);
     }
-  );
+  }
+
+  console.log(wardsData);
+
+  return wardsData;
+
+  // return parallelLimit(
+  //   wards.map(wardId => async callBackFn => {
+  //     await new Promise(resolve => setTimeout(resolve, 1000));
+  //     return getData(source_base_url, wardId, indicatorIds, source_username, source_password, callBackFn);
+  //   }),
+  //   10,
+  //   async (error, results) => {
+  //     if (error) {
+  //       console.log(error);
+  //       return;
+  //     }
+  //     const resultsWithData = results.filter(({ rows }) => rows.length);
+  //     if (resultsWithData.length) {
+  //       const formatedData = resultsWithData.map(analytics => formatDataReceived(analytics));
+  //       const dataValues = [].concat.apply([], formatedData);
+  //       const response = await sendDestinationData(
+  //         destination_base_url,
+  //         dataValues,
+  //         destination_username,
+  //         destination_password
+  //       );
+  //       console.log(JSON.stringify((response.body && response.body.importCount) || {}));
+  //       return;
+  //     } else {
+  //       console.log('no data');
+  //       return;
+  //     }
+  //   }
+  // );
 };
 
 const formatDataReceived = data => {
@@ -70,6 +89,8 @@ const getData = async (source_base_url, wardid, indicatorIds, source_username, s
       source_username,
       source_password
     );
+    NUMBER = NUMBER + 1;
+    console.log('wardData', NUMBER);
     callBackFn(null, wardData);
   } catch (error) {
     callBackFn(error, null);

@@ -1,3 +1,5 @@
+import { chunkArray } from '../helpers';
+
 export const wards = [
   'XtfwHZGXkq7',
   'KknRtkKuzF9',
@@ -3830,3 +3832,5 @@ export const wards = [
   'G35KWVuF0yI',
   'zKBVWTKoPUS'
 ];
+
+export const chunkedWards = chunkArray(wards, 5);
