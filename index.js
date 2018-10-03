@@ -27,6 +27,22 @@ const init = async () => {
   const ovc_program_indicators = metadata.filter(({ programId }) => programId === OVC_PROGRAM_ID);
   console.log(`Server running at: ${server.info.uri}`);
 
+  const chunkedOVCPrIndicators = chunkArray(ovc_program_indicators, 20);
+
+  for (const chunkedIndicatorArray of chunkedOVCPrIndicators) {
+    indicatorIndex += 1;
+    console.log(`chunked ovc number  ${indicatorIndex}`);
+    await getAndSendData(
+      chunkedIndicatorArray,
+      PACT_BASE_URL,
+      PACT_USER_NAME,
+      PACT_PASSWORD,
+      MVC_BASE_URL,
+      MVC_USER_NAME,
+      MVC_PASSWORD
+    );
+  }
+
   const chunkedCaregiverPrIndicators = chunkArray(caregiver_program_indicators, 20);
 
   for (const chunkedIndicatorArray of chunkedCaregiverPrIndicators) {
@@ -42,16 +58,7 @@ const init = async () => {
       MVC_PASSWORD
     );
   }
-
-  // await getAndSendData(
-  //   caregiver_program_indicators,
-  //   PACT_BASE_URL,
-  //   PACT_USER_NAME,
-  //   PACT_PASSWORD,
-  //   MVC_BASE_URL,
-  //   MVC_USER_NAME,
-  //   MVC_PASSWORD
-  // );
+  console.log(`THE END`);
 };
 
 process.on('unhandledRejection', err => {

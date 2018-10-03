@@ -3833,4 +3833,41 @@ export const wards = [
   'zKBVWTKoPUS'
 ];
 
-export const chunkedWards = chunkArray(wards, 5);
+export const kinoWards = [
+  'R5NOrbdmDW8',
+  'PA1jrF9s5MX',
+  'tlg9zWXl9nh',
+  'YJbzDV8GYmz',
+  'LCA8FTDHn2T',
+  'E1nRKmFPI2Y',
+  'WinLfo7Rypv',
+  'DGTuKMT195A',
+  'IefOKUWwdFG',
+  'emZq5Q4mpwO',
+  'gqoJBhPgZlR',
+  'fSDnDeExh2s',
+  'W2fQZDL70on',
+  'quaUPzyMbil',
+  'amfutL5M6pt',
+  'MQ9qZJahRGW',
+  'AdLnVXQ9Fxy',
+  'PIUMyXb1SMz',
+  'PbwtkK2zAXr',
+  'XXxyUXusMTl',
+  'Sc7QY85gUSM',
+  'VwXznYbzANZ',
+  'm2g4KpjYlWP',
+  'IxLdYIX7LXc',
+  'WGVmQZx5n40',
+  'u0741tE2JZl',
+  'Y2WC416hBFU',
+  'y2yNVVTVznL',
+  'EKDZHxU7LXZ',
+  'Wl81hSULnDm',
+  'hMzRs0Cy5sL',
+  'PuCwNTO7Jcy',
+  'GclwBy2Zequ',
+  'YK0Jw5QfvH4'
+];
+
+export const chunkedWards = chunkArray(kinoWards, 5);

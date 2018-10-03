@@ -20,45 +20,26 @@ export const getAndSendData = async (
       getPactData(source_base_url, wardid, indicatorIds, source_username, source_password)
     );
     const response = await Promise.all(responsePromises);
-    const rows = response.map(({ body }) => body.rows).filter(rows => rows.length);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const rows = response.map(({ body }) => body).filter(body => body.rows.length);
     if (rows.length) {
       wardsData.push(rows);
     }
   }
 
-  console.log(wardsData);
+  if (wardsData.length) {
+    const formatedData = [].concat.apply([], wardsData).map(analytics => formatDataReceived(analytics));
+    const dataValues = [].concat.apply([], formatedData);
+    const response = await sendDestinationData(
+      destination_base_url,
+      dataValues,
+      destination_username,
+      destination_password
+    );
+    console.log(JSON.stringify((response.body && response.body.importCount) || {}));
+  }
 
   return wardsData;
-
-  // return parallelLimit(
-  //   wards.map(wardId => async callBackFn => {
-  //     await new Promise(resolve => setTimeout(resolve, 1000));
-  //     return getData(source_base_url, wardId, indicatorIds, source_username, source_password, callBackFn);
-  //   }),
-  //   10,
-  //   async (error, results) => {
-  //     if (error) {
-  //       console.log(error);
-  //       return;
-  //     }
-  //     const resultsWithData = results.filter(({ rows }) => rows.length);
-  //     if (resultsWithData.length) {
-  //       const formatedData = resultsWithData.map(analytics => formatDataReceived(analytics));
-  //       const dataValues = [].concat.apply([], formatedData);
-  //       const response = await sendDestinationData(
-  //         destination_base_url,
-  //         dataValues,
-  //         destination_username,
-  //         destination_password
-  //       );
-  //       console.log(JSON.stringify((response.body && response.body.importCount) || {}));
-  //       return;
-  //     } else {
-  //       console.log('no data');
-  //       return;
-  //     }
-  //   }
-  // );
 };
 
 const formatDataReceived = data => {
@@ -74,7 +55,7 @@ const formatDataReceived = data => {
       categoryOptionCombo,
       period: row[peIndex],
       orgUnit: ouMapper[row[ouIndex]] || row[ouIndex],
-      value: row[valueIndex]
+      value: Math.round(row[valueIndex])
     };
   });
   return formatedRows;
@@ -106,7 +87,7 @@ const getPactData = async (baseUrl, wardId, indicatorIds, username, password) =>
       Authorization
     }
   });
-  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:201805&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
+  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:201809&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
   return client.get(PACT_ANALYTICS_URL, { json: true });
 };
 
