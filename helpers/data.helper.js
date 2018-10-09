@@ -16,10 +16,12 @@ export const getAndSendData = async (
 
   const wardsData = [];
   for (const chunkWards of chunkedWards) {
-    const responsePromises = chunkWards.map(wardid =>
-      getPactData(source_base_url, wardid, indicatorIds, source_username, source_password)
+    const responsePromises = ['201805', '201806', '201807', '201808', '201809'].map(period =>
+      chunkWards.map(wardid =>
+        getPactData(source_base_url, wardid, indicatorIds, source_username, source_password, period)
+      )
     );
-    const response = await Promise.all(responsePromises);
+    const response = await Promise.all([].concat.apply([], responsePromises));
     await new Promise(resolve => setTimeout(resolve, 1000));
     const rows = response.map(({ body }) => body).filter(body => body.rows.length);
     if (rows.length) {
@@ -61,24 +63,7 @@ const formatDataReceived = data => {
   return formatedRows;
 };
 
-const getData = async (source_base_url, wardid, indicatorIds, source_username, source_password, callBackFn) => {
-  try {
-    const { body: wardData } = await getPactData(
-      source_base_url,
-      wardid,
-      indicatorIds,
-      source_username,
-      source_password
-    );
-    NUMBER = NUMBER + 1;
-    console.log('wardData', NUMBER);
-    callBackFn(null, wardData);
-  } catch (error) {
-    callBackFn(error, null);
-  }
-};
-
-const getPactData = async (baseUrl, wardId, indicatorIds, username, password) => {
+const getPactData = async (baseUrl, wardId, indicatorIds, username, password, period) => {
   const authString = new Buffer(`${username}:${password}`).toString('base64');
   const Authorization = `Basic ${authString}`;
   const client = got.extend({
@@ -87,7 +72,7 @@ const getPactData = async (baseUrl, wardId, indicatorIds, username, password) =>
       Authorization
     }
   });
-  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:201809&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
+  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:${period}&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
   return client.get(PACT_ANALYTICS_URL, { json: true });
 };
 
