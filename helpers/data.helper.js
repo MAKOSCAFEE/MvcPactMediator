@@ -64,7 +64,7 @@ const formatDataReceived = data => {
 };
 
 const getPactData = async (baseUrl, wardId, indicatorIds, username, password, period) => {
-  const authString = Buffer.from(`${username}:${password}`, 'base64');
+  const authString = Buffer.from(`${username}:${password}`).toString('base64');
   const Authorization = `Basic ${authString}`;
   const client = got.extend({
     baseUrl,
@@ -77,7 +77,7 @@ const getPactData = async (baseUrl, wardId, indicatorIds, username, password, pe
 };
 
 const sendDestinationData = async (baseUrl, dataValues, username, password) => {
-  const authString = Buffer.from(`${username}:${password}`, 'base64');
+  const authString = Buffer.from(`${username}:${password}`).toString('base64');
   const Authorization = `Basic ${authString}`;
   const DESTINATION_DATASET_URL = `api/dataValueSets.json`;
   const client = got.extend({
