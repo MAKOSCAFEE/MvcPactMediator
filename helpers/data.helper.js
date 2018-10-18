@@ -83,7 +83,9 @@ const sendDestinationData = async (baseUrl, dataValues, username, password) => {
     baseUrl,
     headers: {
       Authorization
-    }
+    },
+    timeout: 250000,
+    retry: 5
   });
   return client.post(DESTINATION_DATASET_URL, { body: { dataValues }, json: true });
 };
