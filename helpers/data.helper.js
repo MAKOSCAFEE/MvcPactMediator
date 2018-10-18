@@ -26,7 +26,7 @@ export const getAndSendData = async (
     const rows = response.map(({ body }) => body).filter(body => body.rows.length);
     if (rows.length) {
       wardsData.push(rows);
-      const formatedData = [].concat.apply([], wardsData).map(analytics => formatDataReceived(analytics));
+      const formatedData = [].concat.apply([], rows).map(analytics => formatDataReceived(analytics));
       const dataValues = [].concat.apply([], formatedData);
       const response = await sendDestinationData(
         destination_base_url,
@@ -71,7 +71,7 @@ const getPactData = async (baseUrl, wardId, indicatorIds, username, password, pe
     timeout: 250000,
     retry: 5
   });
-  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:${period}&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
+  const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:${period}&dimension=ou:LEVEL-5;${wardId}&displayProperty=NAME&skipMeta=true`;
   return client.get(PACT_ANALYTICS_URL, { json: true });
 };
 
