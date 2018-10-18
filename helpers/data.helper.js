@@ -26,19 +26,16 @@ export const getAndSendData = async (
     const rows = response.map(({ body }) => body).filter(body => body.rows.length);
     if (rows.length) {
       wardsData.push(rows);
+      const formatedData = [].concat.apply([], wardsData).map(analytics => formatDataReceived(analytics));
+      const dataValues = [].concat.apply([], formatedData);
+      const response = await sendDestinationData(
+        destination_base_url,
+        dataValues,
+        destination_username,
+        destination_password
+      );
+      console.log(JSON.stringify((response.body && response.body.importCount) || {}));
     }
-  }
-
-  if (wardsData.length) {
-    const formatedData = [].concat.apply([], wardsData).map(analytics => formatDataReceived(analytics));
-    const dataValues = [].concat.apply([], formatedData);
-    const response = await sendDestinationData(
-      destination_base_url,
-      dataValues,
-      destination_username,
-      destination_password
-    );
-    console.log(JSON.stringify((response.body && response.body.importCount) || {}));
   }
 
   return wardsData;
@@ -70,7 +67,9 @@ const getPactData = async (baseUrl, wardId, indicatorIds, username, password, pe
     baseUrl,
     headers: {
       Authorization
-    }
+    },
+    timeout: 250000,
+    retry: 5
   });
   const PACT_ANALYTICS_URL = `api/analytics.json?dimension=dx:${indicatorIds}&dimension=pe:${period}&dimension=ou:${wardId};LEVEL-5&displayProperty=NAME&skipMeta=true`;
   return client.get(PACT_ANALYTICS_URL, { json: true });
