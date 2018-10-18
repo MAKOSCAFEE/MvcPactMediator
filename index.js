@@ -17,7 +17,7 @@ const {
 } = process.env;
 
 const server = HapiServer({
-  port: 3000,
+  port: 3018,
   host: 'localhost'
 });
 
