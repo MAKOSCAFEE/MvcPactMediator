@@ -16,7 +16,7 @@ export const getAndSendData = async (
 
   const wardsData = [];
   for (const chunkWards of chunkedWards) {
-    const responsePromises = ['201805', '201806', '201807', '201808', '201809'].map(period =>
+    const responsePromises = ['201801', '201802', '201803', '201804', '201805'].map(period =>
       chunkWards.map(wardid =>
         getPactData(source_base_url, wardid, indicatorIds, source_username, source_password, period)
       )

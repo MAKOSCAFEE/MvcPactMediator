@@ -1839,6 +1839,7 @@ export const wards = [
   'PFdtTlSaxE8',
   'GGBxJj6fDmk',
   'NX9WQ3sneZr',
+  'UEOS0zXKtak',
   'XNa7FynmX3g',
   'U3ONMk88AbW',
   'f0VcLgXCIo2',
