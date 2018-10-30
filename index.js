@@ -58,6 +58,7 @@ const init = async () => {
     );
   }
   console.log(`THE END`);
+  process.exit();
 };
 
 process.on('unhandledRejection', err => {

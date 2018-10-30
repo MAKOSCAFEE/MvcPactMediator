@@ -16,7 +16,7 @@ export const getAndSendData = async (
 
   const wardsData = [];
   for (const chunkWards of chunkedWards) {
-    const responsePromises = ['201801', '201802', '201803', '201804', '201805'].map(period =>
+    const responsePromises = ['201708', '201709', '201710', '201711', '201712', '201801', '201802', '201803', '201804', '201805'].map(period =>
       chunkWards.map(wardid =>
         getPactData(source_base_url, wardid, indicatorIds, source_username, source_password, period)
       )
@@ -34,7 +34,12 @@ export const getAndSendData = async (
         destination_username,
         destination_password
       );
-      console.log(JSON.stringify((response.body && response.body.importCount) || {}));
+      const { ignored } = response.body && response.body.importCount;
+      if (ignored) {
+        console.log(JSON.stringify(response.body.conflicts || response.body.importCount));
+      } else {
+        console.log(JSON.stringify((response.body && response.body.importCount) || {}));
+      }
     }
   }
 
