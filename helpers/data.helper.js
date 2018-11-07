@@ -2,6 +2,21 @@ import { chunkedWards } from '../metadata/wards';
 import { ouMapper, dataElementMapper } from '../metadata/mvc_pact_mapper';
 import got from 'got';
 
+const MONTH_MAPPING = {
+  0: '01',
+  1: '02',
+  2: '03',
+  3: '04',
+  4: '05',
+  5: '06',
+  6: '07',
+  7: '08',
+  8: '09',
+  9: '10',
+  10: '11',
+  11: '12'
+};
+
 let NUMBER = 0;
 export const getAndSendData = async (
   indicators,
@@ -15,11 +30,12 @@ export const getAndSendData = async (
   const indicatorIds = indicators.map(({ id }) => id).join(';');
 
   const wardsData = [];
+  const todayDate = new Date();
+  todayDate.setMonth(todayDate.getMonth() - 1);
+  const period = `${todayDate.getFullYear()}${MONTH_MAPPING[todayDate.getMonth()]}`;
   for (const chunkWards of chunkedWards) {
-    const responsePromises = ['201708', '201709', '201710', '201711', '201712', '201801', '201802', '201803', '201804', '201805'].map(period =>
-      chunkWards.map(wardid =>
-        getPactData(source_base_url, wardid, indicatorIds, source_username, source_password, period)
-      )
+    const responsePromises = chunkWards.map(wardid =>
+      getPactData(source_base_url, wardid, indicatorIds, source_username, source_password, period)
     );
     const response = await Promise.all([].concat.apply([], responsePromises));
     await new Promise(resolve => setTimeout(resolve, 1000));

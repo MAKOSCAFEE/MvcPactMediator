@@ -26,7 +26,7 @@ const init = async () => {
   const caregiver_program_indicators = metadata.filter(({ programId }) => programId === CAREGIVER_PROGRAM_ID);
   const ovc_program_indicators = metadata.filter(({ programId }) => programId === OVC_PROGRAM_ID);
   console.log(`Server running at: ${server.info.uri}`);
-  const chunkedOVCPrIndicators = chunkArray(ovc_program_indicators, 10);
+  const chunkedOVCPrIndicators = chunkArray(ovc_program_indicators, 20);
 
   for (const chunkedIndicatorArray of chunkedOVCPrIndicators) {
     indicatorIndex += 1;
@@ -42,7 +42,7 @@ const init = async () => {
     );
   }
 
-  const chunkedCaregiverPrIndicators = chunkArray(caregiver_program_indicators, 10);
+  const chunkedCaregiverPrIndicators = chunkArray(caregiver_program_indicators, 20);
 
   for (const chunkedIndicatorArray of chunkedCaregiverPrIndicators) {
     indicatorIndex += 1;
