@@ -31,7 +31,7 @@ exports.getAndSendData = async (
 
   const wardsData = [];
   const todayDate = new Date();
-  todayDate.setMonth(todayDate.getMonth() - 3);
+  todayDate.setMonth(todayDate.getMonth() - 1);
   const period = `${todayDate.getFullYear()}${MONTH_MAPPING[todayDate.getMonth()]}`;
   for (const chunkWards of chunkedWards) {
     const responsePromises = chunkWards.map(wardid =>
