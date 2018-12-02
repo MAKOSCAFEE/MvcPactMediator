@@ -30,9 +30,30 @@ exports.getAndSendData = async (
   const indicatorIds = indicators.map(({ id }) => id).join(';');
 
   const wardsData = [];
-  const todayDate = new Date();
-  todayDate.setMonth(todayDate.getMonth() - 1);
-  const period = `${todayDate.getFullYear()}${MONTH_MAPPING[todayDate.getMonth()]}`;
+  const periods = [
+    '201701',
+    '201702',
+    '201703',
+    '201704',
+    '201705',
+    '201706',
+    '201707',
+    '201708',
+    '201709',
+    '201710',
+    '201711',
+    '201712',
+    '201801',
+    '201802',
+    '201803',
+    '201804',
+    '201805',
+    '201806',
+    '201807',
+    '201808',
+    '201809'
+  ];
+  const period = periods.join(';');
   for (const chunkWards of chunkedWards) {
     const responsePromises = chunkWards.map(wardid =>
       getPactData(source_base_url, wardid, indicatorIds, source_username, source_password, period)
