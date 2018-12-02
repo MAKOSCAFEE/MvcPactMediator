@@ -4,7 +4,7 @@
 
 - `npm install`
 - `cp .env.example .env` and modify the credentials in .env
-- `npm run devStart`
+- `npm run start`
 - sample .env
 
 ```

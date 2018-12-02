@@ -4,8 +4,6 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "babel-node": "babel-node --presets=latest",
-    "devStart": "nodemon index --exec babel-node",
     "start": "node index"
   },
   "dependencies": {
