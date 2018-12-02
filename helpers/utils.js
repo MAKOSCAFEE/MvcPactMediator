@@ -1,4 +1,4 @@
-export const chunkArray = (myArray, chunk_size) => {
+exports.chunkArray = (myArray, chunk_size) => {
   var results = [];
 
   while (myArray.length) {

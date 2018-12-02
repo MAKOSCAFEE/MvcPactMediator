@@ -1,7 +1,9 @@
-import { server as HapiServer } from 'hapi';
-import { config } from 'dotenv';
-import metadata from './metadata/pact_indicators.json';
-import { getAndSendData, chunkArray } from './helpers';
+const { server: HapiServer } = require('hapi');
+const { config } = require('dotenv');
+const metadata = require('./metadata/pact_indicators.json');
+const { dataElementMapper } = require('./metadata/mvc_pact_mapper');
+const { chunkArray } = require('./helpers/utils');
+const { getAndSendData } = require('./helpers/data.helper');
 config();
 
 let indicatorIndex = 0;
@@ -23,14 +25,19 @@ const server = HapiServer({
 
 const init = async () => {
   await server.start();
-  const caregiver_program_indicators = metadata.filter(({ programId }) => programId === CAREGIVER_PROGRAM_ID);
-  const ovc_program_indicators = metadata.filter(({ programId }) => programId === OVC_PROGRAM_ID);
+  const caregiver_program_indicators = metadata.filter(
+    ({ programId, id }) => programId === CAREGIVER_PROGRAM_ID && Object.keys(dataElementMapper).includes(id)
+  );
+  const ovc_program_indicators = metadata.filter(
+    ({ programId, id }) => programId === OVC_PROGRAM_ID && Object.keys(dataElementMapper).includes(id)
+  );
+  console.log({ caregiver_program_indicators, ovc_program_indicators });
   console.log(`Server running at: ${server.info.uri}`);
-  const chunkedOVCPrIndicators = chunkArray(ovc_program_indicators, 20);
+  const chunkedOVCPrIndicators = chunkArray(ovc_program_indicators, 5);
 
   for (const chunkedIndicatorArray of chunkedOVCPrIndicators) {
     indicatorIndex += 1;
-    console.log(`chunked ovc number  ${indicatorIndex}`);
+    console.log(`chunked number  ${indicatorIndex}`);
     await getAndSendData(
       chunkedIndicatorArray,
       PACT_BASE_URL,

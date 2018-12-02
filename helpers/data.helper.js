@@ -1,6 +1,6 @@
-import { chunkedWards } from '../metadata/wards';
-import { ouMapper, dataElementMapper } from '../metadata/mvc_pact_mapper';
-import got from 'got';
+const { chunkedWards } = require('../metadata/wards');
+const { ouMapper, dataElementMapper } = require('../metadata/mvc_pact_mapper');
+const got = require('got');
 
 const MONTH_MAPPING = {
   0: '01',
@@ -18,7 +18,7 @@ const MONTH_MAPPING = {
 };
 
 let NUMBER = 0;
-export const getAndSendData = async (
+exports.getAndSendData = async (
   indicators,
   source_base_url,
   source_username,
@@ -31,7 +31,7 @@ export const getAndSendData = async (
 
   const wardsData = [];
   const todayDate = new Date();
-  todayDate.setMonth(todayDate.getMonth() - 1);
+  todayDate.setMonth(todayDate.getMonth() - 3);
   const period = `${todayDate.getFullYear()}${MONTH_MAPPING[todayDate.getMonth()]}`;
   for (const chunkWards of chunkedWards) {
     const responsePromises = chunkWards.map(wardid =>

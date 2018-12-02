@@ -1,6 +1,6 @@
-import { chunkArray } from '../helpers';
+const { chunkArray } = require('../helpers/utils');
 
-export const wards = [
+const wards = [
   'XtfwHZGXkq7',
   'KknRtkKuzF9',
   'hcTZzhW0i0Z',
@@ -3944,5 +3944,5 @@ export const wards = [
   'lRJExmm58wb',
   'zKBVWTKoPUS'
 ];
-
-export const chunkedWards = chunkArray(wards, 5);
+exports.wards = wards;
+exports.chunkedWards = chunkArray(wards, 5);
