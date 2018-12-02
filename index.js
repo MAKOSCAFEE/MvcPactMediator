@@ -31,7 +31,6 @@ const init = async () => {
   const ovc_program_indicators = metadata.filter(
     ({ programId, id }) => programId === OVC_PROGRAM_ID && Object.keys(dataElementMapper).includes(id)
   );
-  console.log({ caregiver_program_indicators, ovc_program_indicators });
   console.log(`Server running at: ${server.info.uri}`);
   const chunkedOVCPrIndicators = chunkArray(ovc_program_indicators, 5);
 

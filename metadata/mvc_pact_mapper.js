@@ -404,7 +404,7 @@ exports.ouMapper = {
   K6O5KIQOiio: 'kdtcu5Gldhx'
 };
 
-export const dataElementMapper = {
+exports.dataElementMapper = {
   sB4sm4PVYTL: 'HLQ57BTtfuy.Z8CC6Csrk4v',
   jDnjnT8ZVic: 'HLQ57BTtfuy.XmtC8zIlrhT',
   QSp6AdcYcPb: 'HLQ57BTtfuy.Bpgu6wDbqR4',
