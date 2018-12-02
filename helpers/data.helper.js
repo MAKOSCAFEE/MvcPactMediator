@@ -51,7 +51,8 @@ exports.getAndSendData = async (
     '201806',
     '201807',
     '201808',
-    '201809'
+    '201809',
+    '201810'
   ];
   const period = periods.join(';');
   for (const chunkWards of chunkedWards) {
