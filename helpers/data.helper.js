@@ -36,7 +36,7 @@ exports.getAndSendData = async (
   for (const chunkWards of chunkedWards) {
     const responsePromises = chunkWards.map(wardid =>
       // remove the hardcoded period after this.
-      getPactData(source_base_url, wardid, indicatorIds, source_username, source_password, '201810')
+      getPactData(source_base_url, wardid, indicatorIds, source_username, source_password, period)
     );
     const response = await Promise.all([].concat.apply([], responsePromises));
     await new Promise(resolve => setTimeout(resolve, 1000));
